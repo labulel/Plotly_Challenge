@@ -30,25 +30,55 @@ function meta(sample) {
         demo.html("")
         //append the table with patient data
         Object.entries(patientinfo).forEach(([key,value]) => {demo.append("h6").text(`${key}: ${value}`) });
-});
+
+
+        //Create a bar chart
+        var results = data.samples.filter(row => row.id == patientinfo.id)
+        //Get sample values
+        var values = results[0].sample_values
+        var top10 = values.slice(0,10)
+        //Get sample otu ids
+        var otus = results[0].otu_ids
+        var otuids = otus.slice(0,10)
+        //Get sample otu 
+        var labels = results[0].otu_labels
+        var otulabels = labels.slice(0,10)
+        // console.log(top10)
+        // console.log(otuids)
+        // console.log(otulabels)
+        // console.log(results[0])
+        
+        //Trace 1 for the bar graph
+        var trace1 = {
+            type: "bar",
+            x: top10,
+            y: otuids,
+            text: otulabels
+        }
+
+        var data = [trace1]
+
+        var layout ={
+            title: "Bacteria OTUs"
+        };
+
+        Plotly.newPlot("bar", data, layout);
+
+
+
+        
+
+
+
+
+   
+
+
+    });
 };
 
 function optionChanged(sample) {
     meta(sample);
-
-
-//Create bar chart
-function barchart(sample) {
-    d3.json("data/samples.json").then( (data) => { 
-        var values = data.samples
-        var patientvalues = values.sample_values.sort((a,b) => a-b)
-        console.log(patientvalues)        
-
-    })
-
-};
-
-
 };
 
 
