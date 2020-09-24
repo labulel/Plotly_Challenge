@@ -21,6 +21,7 @@ function init() {
 //Populating the metatdata of the patient selected in the dropdown menu
 function meta(sample) {
     d3.json("data/samples.json").then( (data) => {
+
         var meta = data.metadata
         var patientmeta = meta.filter(row => row.id == sample)
         var patientinfo = patientmeta[0]
@@ -35,25 +36,21 @@ function meta(sample) {
         //Create a bar chart
         var results = data.samples.filter(row => row.id == patientinfo.id)
         //Get sample values
-        var values = results[0].sample_values
-        var top10 = values.slice(0,10)
-        //Get sample otu ids
-        var otus = results[0].otu_ids
-        var otuids = otus.slice(0,10)
-        //Get sample otu 
-        var labels = results[0].otu_labels
-        var otulabels = labels.slice(0,10)
-        // console.log(top10)
-        // console.log(otuids)
-        // console.log(otulabels)
-        // console.log(results[0])
+        var values = results[0]
+        var otu_id = values.otu_ids;
+        var labels = values.otu_labels;
+        var sample_values = values.sample_values;
         
+        var yticks = otu_id.slice(0,10).map(otu => `OTU ${otu}` ).reverse()
+
+
         //Trace 1 for the bar graph
         var trace1 = {
             type: "bar",
-            x: top10,
-            y: otuids,
-            text: otulabels
+            x: sample_values.slice(0,10).reverse(),
+            y: yticks,
+            text: labels.slice(0,10).reverse(),
+            orientation: "h"
         }
 
         var data = [trace1]
@@ -65,15 +62,36 @@ function meta(sample) {
         Plotly.newPlot("bar", data, layout);
 
 
+        //Create a bubble chart
+        var trace1 = {
+            x: otu_id,
+            y: sample_values,
+            mode: 'markers',
+            marker: {
+                color: otu_id,
+                size: sample_values
+            }
+        };
+
+        var data = [trace1];
+
+        var layout = {
+            showlegend: false,
+            xaxis: {
+                title: {
+                  text: 'OTU ID'
+                },
+              },
+            yaxis: {
+            title: {
+                text: 'Sample Values'
+            },
+            },
+        };
+
+        Plotly.newPlot('bubble', data, layout)
 
         
-
-
-
-
-   
-
-
     });
 };
 
